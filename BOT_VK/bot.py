@@ -5,23 +5,39 @@ import random
 
 from datetime import datetime
 
-class Bot_VK:
-    def __init__(self):
-        pass
-        # 1) 	 Токен сообщества
-        # 2)     Команды (привет, найти пару, ищем дальше, в избранное, избранное, пока)
-        # 3)     Подключение к БД
-        # 4)     Стартовые параметры клавиатуры
 
-    def get_param_for_searching(self, возраст, пол, город):
-        pass
+class BotVK:
+    def __init__(self, group_token, sql_connect, user_id):
+        self.token = group_token
+        self.command = ['привет', 'найти пару', 'ищем дальше', 'в избранное', 'избранное', 'пока']
+        self.connect = sql_connect
+        self.user_id = user_id
+
+        keyboards = VkKeyboard(one_time=False)
+        begin = VkKeyboard(one_time=True)
+        begin.add_button('найти пару', VkKeyboardColor.PRIMARY)
+
+    def get_param_for_searching(self, age_user, sex_user, city_user):
+        if sex_user > 3:
+            age_up_to = age_user + 3
+            age_from = age_user - 3
+        else:
+            age_up_to = 50
+            age_from = 19
+        if sex_user == 1:
+            sex = 2
+        else:
+            sex = 1
+        city = city_user
+        param_for_search = [age_from, age_up_to, sex, city]
+        return param_for_search
         # 1)     Из параметров пользователя рассчитывает параметры для поиска кандидатов
         # 2)     # Если какой-либо из параметров не получен на вход (отсутствуют в профиле), то устанавливает значения
         #        # по умолчанию
 
         # return (возраст от, возраст до, пол противоположный пользователю, город).
 
-    def send_massege(self, id_пользователя, токен_сообщества, текст, параметр_клавиатуры):
+    def send_massage(self, id_пользователя, токен_сообщества, текст, параметр_клавиатуры):
         pass
         # 1)     Отправляет текстовое сообщение пользователю
 
