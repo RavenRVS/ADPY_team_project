@@ -1,17 +1,12 @@
 import vk_api
 from vk_api.longpoll import VkLongPoll, VkEventType
-from vk_api import VkUpload
-from vk_api.keyboard import VkKeyboard, VkKeyboardColor
 
-import random
 import os
 from dotenv import load_dotenv, find_dotenv
 from time import sleep
-from datetime import datetime
 
 from sql_function import connection, create_tables, select_date_from_table
 from bot import Bot_VK
-from
 
 if __name__ == '__main__':
     load_dotenv(find_dotenv())
