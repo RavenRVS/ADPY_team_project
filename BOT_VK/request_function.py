@@ -1,15 +1,18 @@
+import datetime
+
 import requests
 from time import sleep
 
 
 class ReqVkApi:
-    def __init__(self, user_token, version=5.131):
+    def __init__(self, id_user, user_token, version=5.131):
         self.token = user_token
+        self.id_user = id_user
         self.version = version
         self.param = {'access_token': self.token, 'v': self.version}
-        self.path = 'http://api.vk.com/method'
+        self.path = 'http://api.vk.com/method/'
 
-    def get_info_about_user(self, id_user):
+    def get_info_about_user(self):
         # получаем через API инофрмацию о пользователе
 
         # return [Имя, Фамилия, пол, возраст, город, короткий адрес]
@@ -17,14 +20,15 @@ class ReqVkApi:
         sleep(0.4)
         method = 'users.get'
         url = self.path + method
-        params = {'user_ids': id_user, 'fields': 'bdate,sex,city,domain',
+        params = {'user_ids': self.id_user, 'fields': 'bdate,sex,city,domain',
                   'v': self.version}
 
-        res = requests.get(url, params={**self.params, **params})
+        res = requests.get(url, params={**self.param, **params})
+
         name_user = res.json()['response'][0]['first_name']
         surname_user = res.json()['response'][0]['last_name']
         sex_user = res.json()['response'][0]['sex']
-        age_user = int(res.json()['response'][0]['bdate'][-4:])
+        age_user = datetime.datetime.now().year - int(res.json()['response'][0]['bdate'][-4:])
         city_user = res.json()['response'][0]['city']['id']
         domain = res.json()['response'][0]['domain']
         list_param = [name_user, surname_user, sex_user, age_user, city_user, domain]
@@ -46,7 +50,7 @@ class ReqVkApi:
                   'age_to': age_up_to,
                   'age_from': age_from
                   }
-        res = requests.get(url, params={**self.params, **params})
+        res = requests.get(url, params={**self.param, **params})
         if 'response' in res.json():
             inf_user = res.json()['response']['items']
 
@@ -68,7 +72,7 @@ class ReqVkApi:
                   'rev': 0,
                   'owner_id': id_challenger,
                   'v': self.version, 'count': 20}
-        res = requests.get(url, params={**self.params, **params})
+        res = requests.get(url, params={**self.param, **params})
 
         if 'response' in res.json().keys() and \
                 len(res.json()['response']['items']) > 0 and \
