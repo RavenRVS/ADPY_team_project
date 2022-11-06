@@ -28,7 +28,10 @@ class ReqVkApi:
         name_user = res.json()['response'][0]['first_name']
         surname_user = res.json()['response'][0]['last_name']
         sex_user = res.json()['response'][0]['sex']
-        age_user = datetime.datetime.now().year - int(res.json()['response'][0]['bdate'][-4:])
+        if len(int(res.json()['response'][0]['bdate'])) < 7 or None:
+            age_user = 0
+        else:
+            age_user = int(datetime.datetime.now().year) - int(res.json()['response'][0]['bdate'][-4:])
         city_user = res.json()['response'][0]['city']['id']
         domain = res.json()['response'][0]['domain']
         list_param = [name_user, surname_user, sex_user, age_user, city_user, domain]
