@@ -12,7 +12,7 @@ class ReqVkApi:
         self.param = {'access_token': self.token, 'v': self.version}
         self.path = 'http://api.vk.com/method/'
 
-    def get_info_about_user(self):
+    def get_info_about_user(self, id_user):
         # получаем через API инофрмацию о пользователе
 
         # return [Имя, Фамилия, пол, возраст, город, короткий адрес]
@@ -20,7 +20,7 @@ class ReqVkApi:
         sleep(0.4)
         method = 'users.get'
         url = self.path + method
-        params = {'user_ids': self.id_user, 'fields': 'bdate,sex,city,domain',
+        params = {'user_ids': id_user, 'fields': 'bdate,sex,city,domain',
                   'v': self.version}
 
         res = requests.get(url, params={**self.param, **params})
@@ -28,7 +28,7 @@ class ReqVkApi:
         name_user = res.json()['response'][0]['first_name']
         surname_user = res.json()['response'][0]['last_name']
         sex_user = res.json()['response'][0]['sex']
-        if len(int(res.json()['response'][0]['bdate'])) < 7 or None:
+        if len(str(res.json()['response'][0]['bdate'])) < 7 or None:
             age_user = 0
         else:
             age_user = int(datetime.datetime.now().year) - int(res.json()['response'][0]['bdate'][-4:])
@@ -37,14 +37,19 @@ class ReqVkApi:
         list_param = [name_user, surname_user, sex_user, age_user, city_user, domain]
         return list_param
 
-    def search_people(self, sex, age_from, age_up_to, city):
-        # по заданным параметрам ищет 100 подходящих пользователей ВК
+    def search_people(self, list_param_for_searching):
+        # На вход получаем список [age_from, age_up_to, sex, city]. По заданным параметрам ищет 100 подходящих
+        # пользователей ВК
 
         # return [список ID подходящих пользователей]
         sleep(0.4)
         method = 'users.search'
         url = self.path + method
         count = 100
+        city = list_param_for_searching[3]
+        sex = list_param_for_searching[2]
+        age_up_to = list_param_for_searching[1]
+        age_from = list_param_for_searching[0]
         params = {'v': self.version,
                   'fields': 'bdate,sex,city,domain,country',
                   'city': city,
