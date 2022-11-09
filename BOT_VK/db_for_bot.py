@@ -161,6 +161,19 @@ class BaseForBot:
         else:
             return False
 
+    def check_challenger_in_favorite_list(self, id_user, id_challenger):
+
+        query = self.session.query(RelationList).filter((RelationList.user_id == id_user) &
+                                                        (RelationList.challenger_id == id_challenger) &
+                                                        (RelationList.favorite_list == True)).all()
+        result = []
+        for i in query:
+            result.append(i.challenger_id)
+        if len(result) > 0:
+            return True
+        else:
+            return False
+
     def get_last_challenger(self, id_user):
 
         # Получает информацию о последнем кандидате добавленным пользователем(id_user) из таблиц relation_list
@@ -191,7 +204,7 @@ class BaseForBot:
             return {'error': 'error'}
         return True
 
-    def select_favorite_list(self, id_user):
+    def get_favorite_list(self, id_user):
         pass
         # Получвет выборку записей из таблицы relation_list где столбец id_user = id_user и
         # наличие  favorite_list = true

@@ -32,7 +32,10 @@ class ReqVkApi:
             age_user = 0
         else:
             age_user = int(datetime.datetime.now().year) - int(res.json()['response'][0]['bdate'][-4:])
-        city_user = res.json()['response'][0]['city']['id']
+        if 'city' in res.json()['response'][0]:
+            city_user = res.json()['response'][0]['city']['id']
+        else:
+            city_user = 1
         domain = res.json()['response'][0]['domain']
         list_param = [name_user, surname_user, sex_user, age_user, city_user, domain]
         return list_param
@@ -102,7 +105,6 @@ class ReqVkApi:
             elif 0 < len(dict_photo) <= 1:
                 list_send_photo.append(dict_photo[sorted(dict_photo)[len(dict_photo) - 1]])
 
-            print(','.join(list_send_photo))
             return ','.join(list_send_photo)
 
         elif 'response' in res.json().keys() and \

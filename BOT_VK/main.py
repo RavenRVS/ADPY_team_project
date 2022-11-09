@@ -5,23 +5,25 @@ import os
 from dotenv import load_dotenv, find_dotenv
 from time import sleep
 
-from sql_function import connection, create_tables, select_date_from_table
-from bot import Bot_VK
+from db_for_bot import BaseForBot
+from bot import BotVK
+
+load_dotenv(find_dotenv())
+
+USER_TOKEN = os.environ.get("TOKEN")
+TKN_GROUP = os.environ.get("TOKENGRP")
+BASE_TYPE = os.environ.get("BASE_TYPE")
+BASE_USER_NAME = os.environ.get("BASE_USER_NAME")
+BASE_PWD = os.environ.get("BASE_PWD")
+BASE_NAME = os.environ.get("BASE_NAME")
+
 
 if __name__ == '__main__':
-    load_dotenv(find_dotenv())
-    try:
-        vk = vk_api.VkApi(token=os.getenv('GROUP_TOKEN'))
-        longpoll = VkLongPoll(vk)
-    except:
-        print('Не удалось подключиться к API VK. Проверьте наличие интернет соединение и актуальность введенного '
-              'ключа доступа.')
 
-    connection_bd = connection(*os.getenv('файл с параметрами подключения к БД').split(','))
-    create_tables(connection)
-    user_bd = select_date_from_table(connection, 'users')
-    challengers_bd = select_date_from_table(connection, 'challengers')
-    relation_bd = select_date_from_table(connection, 'relation_lists')
+    vk = vk_api.VkApi(token=TKN_GROUP)
+    longpoll = VkLongPoll(vk)
+
+    base = BaseForBot(BASE_TYPE, BASE_USER_NAME, BASE_PWD, BASE_NAME)
 
     for event in longpoll.listen():
 
@@ -31,5 +33,4 @@ if __name__ == '__main__':
                 sleep(0.4)
 
                 text_msg = event.text.lower()
-                Bot_VK(os.getenv('GROUP_TOKEN'),
-                       event.user_id).action(connection_bd, user_bd, challengers_bd, relation_bd, text_msg)
+                BotVK(TKN_GROUP, USER_TOKEN, base, vk, event.user_id, text_msg).action()
