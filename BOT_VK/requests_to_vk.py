@@ -1,7 +1,7 @@
 import datetime
+from time import sleep
 
 import requests
-from time import sleep
 
 
 class ReqVkApi:
@@ -13,7 +13,7 @@ class ReqVkApi:
         self.path = 'http://api.vk.com/method/'
 
     def get_info_about_user(self, id_user):
-        # получаем через API инофрмацию о пользователе
+        # получает через API инофрмацию о пользователе
 
         # return [Имя, Фамилия, пол, возраст, город, короткий адрес]
 
@@ -41,10 +41,10 @@ class ReqVkApi:
         return list_param
 
     def search_people(self, list_param_for_searching):
-        # На вход получаем список [age_from, age_up_to, sex, city]. По заданным параметрам ищет 100 подходящих
+        # На вход получает список [age_from, age_up_to, sex, city]. По заданным параметрам ищет 100 подходящих
         # пользователей ВК
+        # возвращает [список ID подходящих пользователей]
 
-        # return [список ID подходящих пользователей]
         sleep(0.4)
         method = 'users.search'
         url = self.path + method
@@ -69,9 +69,8 @@ class ReqVkApi:
             return list_id
 
     def get_photo(self, id_challenger):
-        # получаем до трех фото найденного кандидата
-
-        # return список строк в формате "photo<id_challenger>_<id_photo>", если фото нет None
+        # получает на вход ID пользователя и через API запрашивает до 3 фото из профиля этого пользователя
+        # возвращает список строк в формате "photo<id_challenger>_<id_photo>", если фото нет None
 
         sleep(0.4)
         dict_photo = {}

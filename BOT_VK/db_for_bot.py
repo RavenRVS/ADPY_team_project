@@ -22,9 +22,11 @@ class BaseForBot:
         self.session = Session()
 
     def insert_user(self, id_user, user_params):
+        # Получает на вход id пользователя и список user_params = [name_user, surname_user, sex_user,
+        # age_user, city_user, domain]
         # Загружает данные в таблицу user
-        # возвращает True/False
-        # user_params = [name_user, surname_user, sex_user, age_user, city_user, domain]
+        # возвращает True или описание ошибки
+
         try:
             str = Users(user_id=id_user, name=user_params[0], age=user_params[3], sex=user_params[2],
                         city=user_params[4])
@@ -58,10 +60,11 @@ class BaseForBot:
             return False
 
     def update_param_user(self, id_user, user_params):
-        # user_params = [name_user, surname_user, sex_user, age_user, city_user, domain]
+        # Получает на вход id пользователя и список user_params = [name_user, surname_user, sex_user,
+        # age_user, city_user, domain]
         # Проверяет соответствие информации о пользователе в таблице users, полученным на вход.
         # Обновляет данные в таблице при несоответсвии
-        # Возвращает True/False
+        # Возвращает True или описание ошибки
 
         try:
             self.session.query(Users).filter(Users.user_id == id_user).update({Users.name: user_params[0],
@@ -78,9 +81,10 @@ class BaseForBot:
         return True
 
     def insert_challenger(self, id_challenger, challenger_params):
-        # challenger_params = [name_user, surname_user, sex_user, age_user, city_user, domain]
+        # Получает на вход id пользователя и список challenger_params = [name_user, surname_user, sex_user,
+        # age_user, city_user, domain]
         # Загружает информацию о кандидате в таблицу challengers
-        # возвращет True/False
+        # возвращет True или описание ошибки
         try:
             str = Challengers(challenger_id=id_challenger, name=challenger_params[0], surname=challenger_params[1],
                               domain=challenger_params[5])
@@ -93,8 +97,7 @@ class BaseForBot:
         return True
 
     def check_challenger(self, id_challenger):
-
-        # Проверяет наличие кандидата в таблице challenger
+        # По id проверяет наличие кандидата в таблице challenger
         # возвращает True/False
 
         query = self.session.query(Challengers).filter(Challengers.challenger_id == id_challenger).all()
@@ -108,11 +111,10 @@ class BaseForBot:
             return False
 
     def update_param_challenger(self, id_challenger, challenger_params):
-
-        # challenger_params = [name_user, surname_user, sex_user, age_user, city_user, domain]
+        # Получает на вход id пользователя и список challenger_params = [name_user, surname_user, sex_user,
+        # age_user, city_user, domain]
         # Обновляет данные в таблице Challengers для строки с id_challenger
-
-        # возвращет True или код ошибки
+        # возвращет True или описание ошибки
 
         try:
             self.session.query(Challengers).filter(Challengers.challenger_id == id_challenger).update({
@@ -128,9 +130,8 @@ class BaseForBot:
         return True
 
     def insert_relation(self, id_user, id_challenger, recording_date, favorite_list=False, black_list=False):
-
         # Загружает данные в таблицу relation_lists
-        # Возвращает True/False
+        # Возвращает True или описание ошибки
 
         try:
             str = RelationList(user_id=id_user,
@@ -147,7 +148,6 @@ class BaseForBot:
         return True
 
     def check_relation(self, id_user, id_challenger):
-        pass
         # По id_user, id_challenger проверяет наличие записи в таблице relation_lists
         # возвращает True/False
 
@@ -162,6 +162,8 @@ class BaseForBot:
             return False
 
     def check_challenger_in_favorite_list(self, id_user, id_challenger):
+        # Проверяет наличие id_challenger в листе избранных пользователя id_user
+        # Возвращает True/False
 
         query = self.session.query(RelationList).filter((RelationList.user_id == id_user) &
                                                         (RelationList.challenger_id == id_challenger) &
@@ -175,10 +177,9 @@ class BaseForBot:
             return False
 
     def get_last_challenger(self, id_user):
-
         # Получает информацию о последнем кандидате добавленным пользователем(id_user) из таблиц relation_list
         # и challengers
-        # Возвращает список [id_challenger, name_challenger, surname_challenger, domain, favorite_list, black_list]
+        # Возвращает список [id_challenger, name_challenger, surname_challenger, domain]
 
         subquery = self.session.query(RelationList).filter(RelationList.user_id == id_user).order_by(
             RelationList.date_added.desc()).limit(1).subquery()
@@ -189,14 +190,13 @@ class BaseForBot:
         return result_list
 
     def insert_challenger_in_favorite_list(self, id_user, id_challenger):
-
         #  Устанавливает True в таблице relation_lists для строки с комибинацией id_user и id_challenger
-        #  возвращает True/False
+        #  возвращает True или описание ошибки
 
         try:
             self.session.query(RelationList).filter((RelationList.user_id == id_user) &
                                                     (RelationList.challenger_id == id_challenger)).update({
-                RelationList.favorite_list: True}, synchronize_session=False)
+                                                     RelationList.favorite_list: True}, synchronize_session=False)
             self.session.commit()
 
         except SQLAlchemyError:
@@ -205,13 +205,12 @@ class BaseForBot:
         return True
 
     def get_favorite_list(self, id_user):
-        pass
         # Получвет выборку записей из таблицы relation_list где столбец id_user = id_user и
         # наличие  favorite_list = true
-        # return список с вложенным списком [[id_challenger, name_challenger, surname_challenger, link],[...]]
+        # возвращает список с вложенным списком [[id_challenger, name_challenger, surname_challenger, link],[...]]
 
         subquery = self.session.query(RelationList).filter((RelationList.user_id == id_user) &
-                                                        (RelationList.favorite_list == True)).order_by(
+                                                           (RelationList.favorite_list == True)).order_by(
             RelationList.date_added.desc()).subquery()
         query = self.session.query(Challengers).join(subquery,
                                                      Challengers.challenger_id == subquery.c.challenger_id).all()

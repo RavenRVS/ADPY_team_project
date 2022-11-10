@@ -1,12 +1,12 @@
-import vk_api
-from vk_api.longpoll import VkLongPoll, VkEventType
-
 import os
-from dotenv import load_dotenv, find_dotenv
 from time import sleep
 
-from db_for_bot import BaseForBot
+import vk_api
+from dotenv import load_dotenv, find_dotenv
+from vk_api.longpoll import VkLongPoll, VkEventType
+
 from bot import BotVK
+from db_for_bot import BaseForBot
 
 load_dotenv(find_dotenv())
 
@@ -16,7 +16,6 @@ BASE_TYPE = os.environ.get("BASE_TYPE")
 BASE_USER_NAME = os.environ.get("BASE_USER_NAME")
 BASE_PWD = os.environ.get("BASE_PWD")
 BASE_NAME = os.environ.get("BASE_NAME")
-
 
 if __name__ == '__main__':
 
