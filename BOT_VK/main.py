@@ -23,6 +23,7 @@ if __name__ == '__main__':
     longpoll = VkLongPoll(vk)
 
     base = BaseForBot(BASE_TYPE, BASE_USER_NAME, BASE_PWD, BASE_NAME)
+    bot = BotVK(TKN_GROUP, USER_TOKEN, base, vk)
 
     for event in longpoll.listen():
 
@@ -31,5 +32,4 @@ if __name__ == '__main__':
             if event.to_me:
                 sleep(0.4)
 
-                text_msg = event.text.lower()
-                BotVK(TKN_GROUP, USER_TOKEN, base, vk, event.user_id, text_msg).action()
+                bot.action(event)

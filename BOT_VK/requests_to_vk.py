@@ -1,13 +1,11 @@
 import datetime
-from time import sleep
 
 import requests
 
 
 class ReqVkApi:
-    def __init__(self, id_user, user_token, version=5.131):
+    def __init__(self, user_token, version=5.131):
         self.token = user_token
-        self.id_user = id_user
         self.version = version
         self.param = {'access_token': self.token, 'v': self.version}
         self.path = 'http://api.vk.com/method/'
@@ -15,9 +13,8 @@ class ReqVkApi:
     def get_info_about_user(self, id_user):
         # получает через API инофрмацию о пользователе
 
-        # return [Имя, Фамилия, пол, возраст, город, короткий адрес]
+        # Возвращает словарь с ключами {Имя, Фамилия, пол, возраст, город, короткий адрес}
 
-        sleep(0.4)
         method = 'users.get'
         url = self.path + method
         params = {'user_ids': id_user, 'fields': 'bdate,sex,city,domain',
@@ -37,22 +34,22 @@ class ReqVkApi:
         else:
             city_user = 1
         domain = res.json()['response'][0]['domain']
-        list_param = [name_user, surname_user, sex_user, age_user, city_user, domain]
-        return list_param
+        dict_param = {'name': name_user, 'surname': surname_user, 'sex': sex_user, 'age': age_user,
+                      'city': city_user, 'domain': domain}
+        return dict_param
 
-    def search_people(self, list_param_for_searching):
+    def search_people(self, dict_param_for_searching):
         # На вход получает список [age_from, age_up_to, sex, city]. По заданным параметрам ищет 100 подходящих
         # пользователей ВК
         # возвращает [список ID подходящих пользователей]
 
-        sleep(0.4)
         method = 'users.search'
         url = self.path + method
         count = 100
-        city = list_param_for_searching[3]
-        sex = list_param_for_searching[2]
-        age_up_to = list_param_for_searching[1]
-        age_from = list_param_for_searching[0]
+        city = dict_param_for_searching['city']
+        sex = dict_param_for_searching['sex']
+        age_up_to = dict_param_for_searching['age_up_to']
+        age_from = dict_param_for_searching['age_from']
         params = {'v': self.version,
                   'fields': 'bdate,sex,city,domain,country',
                   'city': city,
@@ -72,7 +69,6 @@ class ReqVkApi:
         # получает на вход ID пользователя и через API запрашивает до 3 фото из профиля этого пользователя
         # возвращает список строк в формате "photo<id_challenger>_<id_photo>", если фото нет None
 
-        sleep(0.4)
         dict_photo = {}
         method = 'photos.get'
         url = self.path + method
@@ -92,17 +88,10 @@ class ReqVkApi:
                 dict_photo[photos['likes']['count'], photos['id']] = f"photo{photos['owner_id']}_{photos['id']}"
 
             list_send_photo = []
-            if len(dict_photo) >= 3:
-                list_send_photo.append(dict_photo[sorted(dict_photo)[len(dict_photo) - 1]])
-                list_send_photo.append(dict_photo[sorted(dict_photo)[len(dict_photo) - 2]])
-                list_send_photo.append(dict_photo[sorted(dict_photo)[len(dict_photo) - 3]])
-
-            elif 1 < len(dict_photo) <= 2:
-                list_send_photo.append(dict_photo[sorted(dict_photo)[len(dict_photo) - 1]])
-                list_send_photo.append(dict_photo[sorted(dict_photo)[len(dict_photo) - 2]])
-
-            elif 0 < len(dict_photo) <= 1:
-                list_send_photo.append(dict_photo[sorted(dict_photo)[len(dict_photo) - 1]])
+            i = 0
+            while i < 3 and i < len(dict_photo):
+                list_send_photo.append(dict_photo[sorted(dict_photo, reverse=True)[i]])
+                i += 1
 
             return ','.join(list_send_photo)
 
