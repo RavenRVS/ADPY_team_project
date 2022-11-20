@@ -1,4 +1,4 @@
-# Командный проект по курсу «Профессиональная работа с Python»
+# Командный проект по курсу «Профессиональная работа с Python» <a href="https://github.com/RavenRVS/ADPY_team_project/tree/main/BOT_VK">(моё решение) </a> <br>
 
 ## VKinder
 
